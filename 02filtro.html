@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baixar Produtos</title>
+    <style>
+      /* Configurações Gerais */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-flow: column nowrap;
+        gap: 10px;
+      }
+
+      #box {
+        /* position: absolute;
+            right: 4px; */
+        align-self: flex-end;
+      }
+
+      /* Secção de Botões de Filtro */
+      #btns {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .btn {
+        background-color: #fff;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover,
+      .btn.active {
+        background-color: #2c3e50;
+        color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Grelha de Resultados */
+      #resultado {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+        padding: 10px;
+      }
+
+      /* Cartão de Produto Individual */
+      .produto-card {
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        display: flex;
+        flex-flow: column nowrap;
+      }
+
+      .produto-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Imagem do Produto */
+      .produto-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        object-position: center;
+        border-bottom: 1px solid #eee;
+      }
+
+      /* Detalhes do Texto */
+      .produto-info {
+        padding: 15px;
+      }
+
+      .produto-card h2 {
+        font-size: 18px;
+        margin: 0 0 8px 0;
+        color: #2c3e50;
+      }
+
+      .produto-preco {
+        font-size: 20px;
+        font-weight: bold;
+        color: #27ae60;
+        margin: 0 0 10px 0;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .produto-preco:hover {
+        text-decoration: underline;
+      }
+
+      .produto-categoria {
+        display: inline-block;
+        background-color: #eef2f3;
+        color: #7f8c8d;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 15px;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main id="main">
+      <div id="box">
+        <input type="text" name="psqsa" id="psqsa" />
+        <input type="button" value="Pesquisar" onclick="psqsar()" />
+      </div>
+      <section id="btns">
+        <button type="button" class="btn active">Todos</button>
+        <button type="button" class="btn">Tech</button>
+        <button type="button" class="btn">Futebol</button>
+        <button type="button" class="btn">Hacker</button>
+        <button type="button" class="btn">Foco</button>
+        <button type="button" class="btn">Favoritos</button>
+      </section>
+      <section id="resultado"></section>
+    </main>
+  </body>
+  <script>
+    let fav;
+    let produtosHTML = window.document.getElementById("resultado");
+    let btns = window.document.querySelectorAll(".btn");
+    let produtos = [
+      {
+        id: 1,
+        nome: "Mr. Robot",
+        categoria: "Hacker",
+        src: "mr.robot.jpg",
+        fav: false,
+      },
+      {
+        id: 2,
+        nome: "Barça",
+        categoria: "Futebol",
+        src: "barça.jpeg",
+        fav: false,
+      },
+      {
+        id: 3,
+        nome: "Messi",
+        categoria: "Futebol",
+        src: "messi.jpeg",
+        fav: false,
+      },
+      {
+        id: 4,
+        nome: "Marck Zuckerberg",
+        categoria: "Tech",
+        src: "mark.jpg",
+        fav: false,
+      },
+      {
+        id: 5,
+        nome: "Motriz Zimerman",
+        categoria: "Tech",
+        src: "motriz.jpg",
+        fav: false,
+      },
+      {
+        id: 6,
+        nome: "Marcus Tilson",
+        categoria: "Tech",
+        src: "tilson.jpeg",
+        fav: false,
+      },
+      {
+        id: 7,
+        nome: "The Terminal",
+        categoria: "Hacker",
+        src: "terminal.jpg",
+        fav: false,
+      },
+      {
+        id: 8,
+        nome: "Engineer focus",
+        categoria: "Foco",
+        src: "focus.jpg",
+        fav: false,
+      },
+      {
+        id: 9,
+        nome: "Tarick St. patrick",
+        categoria: "Foco",
+        src: "tariq.jpg",
+        fav: false,
+      },
+      {
+        id: 10,
+        nome: "Ronaldo",
+        categoria: "Futebol",
+        src: "ronaldo.jpg",
+        fav: false,
+      },
+      {
+        id: 11,
+        nome: "Focus!",
+        categoria: "Focus",
+        src: "b3a7dea905bfa34cd14e8b3a5d381817.png",
+        fav: false,
+      },
+      {
+        id: 12,
+        nome: "Mapa Fullstack",
+        categoria: "Tech",
+        src: "7bfd875e85fbbed980e9df59bcde8579 (1).png",
+        fav: false,
+      },
+      {
+        id: 13,
+        nome: "Musk",
+        categoria: "Foco",
+        src: "173388654398159839.jpg",
+        fav: false,
+      },
+      {
+        id: 14,
+        nome: "Get some Idea",
+        categoria: "Foco",
+        src: "1382540.png",
+        fav: false,
+      },
+    ];
+
+    window.addEventListener("load", () => {
+      if (!localStorage.getItem("array")) {
+        mostrar(produtos);
+      } else {
+        produtos = JSON.parse(localStorage.getItem("array"));
+        // alert(produtos[0].fav);
+        //mostrar(JSON.parse(localStorage.getItem("array")));
+        mostrar(produtos);
+      }
+    });
+    //mostrar(produtos);
+    function mostrar(arr) {
+      produtosHTML.innerHTML = "";
+
+      arr.forEach((ele) => {
+        produtosHTML.innerHTML += `
+                    <div class="produto-card">
+                        <img src='../Meus/imgs/${ele.src}' alt='${ele.nome}'>
+                        <div class="produto-info">
+                            <h2 class="nome">${ele.nome}</h2>
+                            <button type="button" class="bt" data-id="${ele.id}">${ele.fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}</button>
+                            <p><a class="produto-preco" href="imgs/${ele.src}" download="${ele.src}">Baixar</a></p>
+                            <span class="produto-categoria">${ele.categoria}</span>
+                        </div>
+                    </div>`;
+        //
+      });
+
+      document.querySelectorAll(".bt").forEach((b) => {
+        b.addEventListener("click", () => {
+          let id = b.dataset.id;
+
+          let produto = produtos.find((e) => e.id == id);
+
+          produto.fav = !produto.fav;
+
+          if (bt == "Todos") {
+            //bt = ele.innerText;
+            mostrar(produtos);
+          } else if (bt == "Favoritos") {
+            let f = produtos.filter((e) => e.fav == true);
+            // bt = ele.innerText;
+            mostrar(f);
+          } else {
+            let res = produtos.filter((elemento) => elemento.categoria == bt);
+            // bt = ele.innerText;
+            mostrar(res);
+          }
+          localStorage.setItem("array", JSON.stringify(produtos));
+        });
+      });
+    }
+
+    let bt = "Todos";
+
+    btns.forEach((ele) =>
+      ele.addEventListener("click", (filtrar) => {
+        if (ele.innerText == "Todos") {
+          bt = ele.innerText;
+          mostrar(produtos);
+        } else if (ele.innerText == "Favoritos") {
+          let f = produtos.filter((e) => e.fav == true);
+          bt = ele.innerText;
+          mostrar(f);
+        } else {
+          let res = produtos.filter(
+            (elemento) => elemento.categoria == ele.innerText,
+          );
+          bt = ele.innerText;
+          mostrar(res);
+        }
+
+        btns.forEach((b) => b.classList.remove("active"));
+        ele.classList.add("active");
+      }),
+    );
+
+    function psqsar() {
+      let res;
+      let campo = window.document
+        .getElementById("psqsa")
+        .value.trim()
+        .toLocaleLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      if (bt == "Todos") {
+        res = produtos.filter((ele) =>
+          ele.nome
+            .toLocaleLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes(campo),
+        );
+      } else if (bt == "Favoritos") {
+        res = produtos.filter(
+          (ele) =>
+            ele.fav &&
+            ele.nome
+              .toLocaleLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .includes(campo),
+        );
+      } else {
+        res = produtos.filter(
+          (ele) =>
+            ele.categoria == bt &&
+            ele.nome
+              .toLocaleLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .includes(campo),
+        );
+      }
+
+      if (res.length === 0) {
+        produtosHTML.innerHTML = `<h2  style="text-align: center;">Sem resultados!</h2>`;
+      } else {
+        mostrar(res);
+      }
+    }
+
+    /*
+        dataset.id? O html permite criar atributos personalizados
+        mas tem de te conter 'data-...' ex: data-nome="", data-idade="";
+        OBS: O esse atributo sempre retorna text.
+
+        Logo: <div data-nome="tislon">T</div>
+        js: div.dataset.nome retorna: Tilson;
+
+        produtos.fav = !produto.fav. Inverte o boleano.
+    */
+  </script>
+</html>
